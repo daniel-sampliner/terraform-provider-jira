@@ -127,13 +127,13 @@ func resourceIssueCreate(d *schema.ResourceData, m interface{}) error {
 
 	if assignee != "" {
 		i.Fields.Assignee = &jira.User{
-			Name: assignee.(string),
+			AccountID: assignee.(string),
 		}
 	}
 
 	if reporter != "" {
 		i.Fields.Reporter = &jira.User{
-			Name: reporter.(string),
+			AccountID: reporter.(string),
 		}
 	}
 
@@ -198,11 +198,11 @@ func resourceIssueRead(d *schema.ResourceData, m interface{}) error {
 	}
 
 	if issue.Fields.Assignee != nil {
-		d.Set("assignee", issue.Fields.Assignee.Name)
+		d.Set("assignee", issue.Fields.Assignee.AccountID)
 	}
 
 	if issue.Fields.Reporter != nil {
-		d.Set("reporter", issue.Fields.Reporter.Name)
+		d.Set("reporter", issue.Fields.Reporter.AccountID)
 	}
 
 	// Custom or non-standard fields
@@ -289,13 +289,13 @@ func resourceIssueUpdate(d *schema.ResourceData, m interface{}) error {
 
 	if assignee != "" {
 		i.Fields.Assignee = &jira.User{
-			Name: assignee.(string),
+			AccountID: assignee.(string),
 		}
 	}
 
 	if reporter != "" {
 		i.Fields.Reporter = &jira.User{
-			Name: reporter.(string),
+			AccountID: reporter.(string),
 		}
 	}
 
