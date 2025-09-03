@@ -45,6 +45,11 @@ func resourceIssue() *schema.Resource {
 					Required: true,
 				},
 			},
+			"components": &schema.Schema{
+				Type:     schema.TypeSet,
+				Optional: true,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+			},
 			"issue_type": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
@@ -100,6 +105,7 @@ func resourceIssueCreate(d *schema.ResourceData, m interface{}) error {
 	assignee := d.Get("assignee")
 	reporter := d.Get("reporter")
 	fields := d.Get("fields")
+	components := d.Get("components")
 	issueType := d.Get("issue_type").(string)
 	description := d.Get("description").(string)
 	labels := d.Get("labels")
@@ -137,6 +143,12 @@ func resourceIssueCreate(d *schema.ResourceData, m interface{}) error {
 		}
 		for field, value := range fields.(map[string]interface{}) {
 			i.Fields.Unknowns.Set(field, fmt.Sprintf("%v", value))
+		}
+	}
+
+	if components.(*schema.Set).Len() > 0 {
+		for _, component := range components.(*schema.Set).List() {
+			i.Fields.Components = append(i.Fields.Components, &jira.Component{ID: component.(string)})
 		}
 	}
 
@@ -220,6 +232,15 @@ func resourceIssueRead(d *schema.ResourceData, m interface{}) error {
 		d.Set("fields", incomingFields)
 	}
 
+	d.Set("components", nil)
+	if issue.Fields.Components != nil && len(issue.Fields.Components) > 0 {
+		componentIDs := make([]string, len(issue.Fields.Components))
+		for idx := range issue.Fields.Components {
+			componentIDs[idx] = issue.Fields.Components[idx].ID
+		}
+		d.Set("components", componentIDs)
+	}
+
 	d.Set("labels", nil)
 	if issue.Fields.Labels != nil && len(issue.Fields.Labels) > 0 {
 		d.Set("labels", issue.Fields.Labels)
@@ -245,6 +266,7 @@ func resourceIssueUpdate(d *schema.ResourceData, m interface{}) error {
 	issueType := d.Get("issue_type").(string)
 	description := d.Get("description").(string)
 	fields := d.Get("fields")
+	components := d.Get("components")
 	labels := d.Get("labels")
 	summary := d.Get("summary").(string)
 	projectKey := d.Get("project_key").(string)
@@ -289,6 +311,12 @@ func resourceIssueUpdate(d *schema.ResourceData, m interface{}) error {
 		}
 		for field, value := range fields.(map[string]interface{}) {
 			i.Fields.Unknowns.Set(field, fmt.Sprintf("%v", value))
+		}
+	}
+
+	if components.(*schema.Set).Len() > 0 {
+		for _, component := range components.(*schema.Set).List() {
+			i.Fields.Components = append(i.Fields.Components, &jira.Component{ID: component.(string)})
 		}
 	}
 

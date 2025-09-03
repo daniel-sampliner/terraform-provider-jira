@@ -56,6 +56,7 @@ resource "jira_issue" "custom_fields_example" {
 ### Optional
 
 - `assignee` (String)
+- `components` (Set of String)
 - `delete_transition` (String)
 - `description` (String)
 - `fields` (Map of String)
