@@ -60,6 +60,7 @@ func Provider() *schema.Provider {
 			"jira_jql":       resourceJQL(),
 			"jira_component": dataComponent(),
 			"jira_issue":     dataIssue(),
+			"jira_user":      dataUser(),
 		},
 		ConfigureFunc: providerConfigure,
 	}
